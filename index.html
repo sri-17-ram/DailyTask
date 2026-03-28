@@ -1,0 +1,825 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LifeOS — Daily Productivity</title>
+  <link rel="preconnect" href="https://api.fontshare.com" />
+  <link href="https://api.fontshare.com/v2/css?f[]=clash-display@400,500,600,700&f[]=satoshi@400,500,700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body class="dark-mode">
+
+<!-- Animated background blobs -->
+<div class="bg-blobs" aria-hidden="true">
+  <div class="blob blob-1"></div>
+  <div class="blob blob-2"></div>
+  <div class="blob blob-3"></div>
+  <div class="blob blob-4"></div>
+</div>
+<div class="bg-noise" aria-hidden="true"></div>
+<div class="bg-grid" aria-hidden="true"></div>
+
+<!-- SIDEBAR -->
+<aside class="sidebar" id="sidebar" role="navigation" aria-label="Main navigation">
+  <div class="sidebar-header">
+    <div class="logo">LIFEOS</div>
+    <button class="sidebar-toggle" id="sidebarToggle" aria-label="Toggle sidebar">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M10 3L5 8L10 13" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+    </button>
+  </div>
+  <nav class="sidebar-nav">
+    <div class="nav-group">
+      <span class="nav-group-label">MAIN</span>
+      <a class="nav-item active" data-section="dashboard" href="#" aria-label="Dashboard"><span class="nav-icon">🏠</span><span class="nav-label">Dashboard</span></a>
+      <a class="nav-item" data-section="tasks" href="#" aria-label="Tasks"><span class="nav-icon">✅</span><span class="nav-label">Tasks</span></a>
+      <a class="nav-item" data-section="planner" href="#" aria-label="Planner"><span class="nav-icon">📅</span><span class="nav-label">Planner</span></a>
+    </div>
+    <div class="nav-group">
+      <span class="nav-group-label">WELLNESS</span>
+      <a class="nav-item" data-section="habits" href="#" aria-label="Habits"><span class="nav-icon">💪</span><span class="nav-label">Habits</span></a>
+      <a class="nav-item" data-section="goals" href="#" aria-label="Goals"><span class="nav-icon">🎯</span><span class="nav-label">Goals</span></a>
+      <a class="nav-item" data-section="health" href="#" aria-label="Health"><span class="nav-icon">🏥</span><span class="nav-label">Health</span></a>
+    </div>
+    <div class="nav-group">
+      <span class="nav-group-label">TOOLS</span>
+      <a class="nav-item" data-section="focus" href="#" aria-label="Focus Timer"><span class="nav-icon">⏱️</span><span class="nav-label">Focus</span></a>
+      <a class="nav-item" data-section="routine" href="#" aria-label="Morning Routine"><span class="nav-icon">🌅</span><span class="nav-label">Routine</span></a>
+      <a class="nav-item" data-section="journal" href="#" aria-label="Journal"><span class="nav-icon">📔</span><span class="nav-label">Journal</span></a>
+    </div>
+    <div class="nav-group">
+      <span class="nav-group-label">INSIGHTS</span>
+      <a class="nav-item" data-section="finance" href="#" aria-label="Finance"><span class="nav-icon">💰</span><span class="nav-label">Finance</span></a>
+      <a class="nav-item" data-section="balance" href="#" aria-label="Life Balance"><span class="nav-icon">⚖️</span><span class="nav-label">Balance</span></a>
+      <a class="nav-item" data-section="analytics" href="#" aria-label="Analytics"><span class="nav-icon">📊</span><span class="nav-label">Analytics</span></a>
+    </div>
+    <div class="nav-group">
+      <span class="nav-group-label">AI</span>
+      <a class="nav-item" data-section="ai" href="#" aria-label="AI Assistant"><span class="nav-icon">🤖</span><span class="nav-label">AI Assistant</span></a>
+    </div>
+    <div class="nav-group">
+      <span class="nav-group-label">SYSTEM</span>
+      <a class="nav-item" data-section="notifications" href="#" aria-label="Notifications"><span class="nav-icon">🔔</span><span class="nav-label">Notifications</span><span class="nav-badge" id="notifBadge">0</span></a>
+      <a class="nav-item" data-section="settings" href="#" aria-label="Settings"><span class="nav-icon">⚙️</span><span class="nav-label">Settings</span></a>
+    </div>
+  </nav>
+  <div class="sidebar-footer">
+    <div class="avatar-circle" id="sidebarAvatar">A</div>
+    <div class="sidebar-user">
+      <span class="user-name" id="sidebarName">Alex</span>
+      <span class="user-handle" id="sidebarHandle">@alex</span>
+    </div>
+    <button class="icon-btn" data-section="settings" aria-label="Settings">⚙️</button>
+  </div>
+</aside>
+
+<!-- TOP BAR -->
+<header class="topbar" id="topbar" role="banner">
+  <h1 class="topbar-title gradient-text" id="topbarTitle">Dashboard</h1>
+  <div class="topbar-search">
+    <button class="search-btn" id="searchBtn" aria-label="Open command palette">
+      <span>🔍</span><span class="search-hint">Search or press ⌘K</span>
+    </button>
+  </div>
+  <div class="topbar-actions">
+    <button class="icon-btn notif-btn" id="topbarNotif" aria-label="Notifications">
+      🔔<span class="notif-dot" id="topbarNotifDot"></span>
+    </button>
+    <button class="icon-btn theme-toggle" id="themeToggle" aria-label="Toggle theme">🌙</button>
+    <div class="avatar-circle topbar-avatar" id="topbarAvatar">A</div>
+  </div>
+</header>
+
+<!-- MAIN CONTENT -->
+<main class="main-content" id="mainContent">
+
+<!-- ===== DASHBOARD ===== -->
+<section class="section active" id="section-dashboard" data-section="dashboard">
+  <div class="hero-card" id="heroCard">
+    <div class="hero-bg"></div>
+    <div class="hero-content">
+      <div class="hero-greeting" id="heroGreeting"></div>
+      <div class="hero-clock" id="heroClock">00:00:00</div>
+      <div class="hero-date" id="heroDate"></div>
+    </div>
+    <div class="hero-ring">
+      <svg width="100" height="100" viewBox="0 0 100 100">
+        <circle cx="50" cy="50" r="40" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="6"/>
+        <circle cx="50" cy="50" r="40" fill="none" stroke="url(#ringGrad)" stroke-width="6"
+          stroke-linecap="round" stroke-dasharray="251" stroke-dashoffset="251"
+          id="heroRing" transform="rotate(-90 50 50)"/>
+        <defs><linearGradient id="ringGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%" stop-color="#00F5FF"/><stop offset="100%" stop-color="#7B2FFF"/>
+        </linearGradient></defs>
+      </svg>
+      <span class="ring-pct" id="heroRingPct">0%</span>
+    </div>
+  </div>
+  <div class="stat-cards" id="dashStatCards">
+    <div class="stat-card" style="--i:0"><div class="stat-icon" style="background:var(--gradient-primary)">✅</div><div class="stat-value" id="statTasksDone">0</div><div class="stat-label">Tasks Done</div><canvas class="sparkline" id="sparkTasks" width="80" height="30"></canvas></div>
+    <div class="stat-card" style="--i:1"><div class="stat-icon" style="background:var(--gradient-warm)">⏱️</div><div class="stat-value" id="statFocusHrs">0</div><div class="stat-label">Focus Hours</div><canvas class="sparkline" id="sparkFocus" width="80" height="30"></canvas></div>
+    <div class="stat-card" style="--i:2"><div class="stat-icon" style="background:var(--gradient-nature)">💪</div><div class="stat-value" id="statHabitsDone">0</div><div class="stat-label">Habits Done</div><canvas class="sparkline" id="sparkHabits" width="80" height="30"></canvas></div>
+    <div class="stat-card" style="--i:3"><div class="stat-icon" style="background:linear-gradient(135deg,#FFD93D,#FF6B6B)">🎯</div><div class="stat-value" id="statGoals">0</div><div class="stat-label">Active Goals</div><canvas class="sparkline" id="sparkGoals" width="80" height="30"></canvas></div>
+  </div>
+  <div class="dash-grid">
+    <div class="card dash-timeline">
+      <div class="card-header"><h3>Today's Timeline</h3></div>
+      <div class="timeline-list" id="dashTimeline"></div>
+    </div>
+    <div class="card dash-activity">
+      <div class="card-header"><h3>Recent Activity</h3></div>
+      <div class="activity-feed" id="activityFeed"></div>
+    </div>
+    <div class="card dash-ai-brief">
+      <div class="card-header">
+        <div class="ai-avatar-sm pulse-ring">🤖</div>
+        <h3>AI Daily Brief</h3>
+        <button class="btn-ghost btn-sm" id="refreshBrief" aria-label="Refresh AI brief">↻</button>
+      </div>
+      <div class="ai-brief-text" id="aiBriefText">Loading your daily brief...</div>
+    </div>
+    <div class="card dash-weekly">
+      <div class="card-header"><h3>Weekly Productivity</h3></div>
+      <canvas id="weeklyChart" width="300" height="150"></canvas>
+      <div class="streak-row"><span>🔥 <strong id="dashStreak">0</strong> day streak</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== TASKS ===== -->
+<section class="section" id="section-tasks" data-section="tasks">
+  <div class="toolbar">
+    <input class="search-input" id="taskSearch" placeholder="Search tasks..." aria-label="Search tasks" />
+    <div class="pill-group" id="taskPriorityFilter">
+      <button class="pill active" data-val="all">All</button>
+      <button class="pill" data-val="high">🔴 High</button>
+      <button class="pill" data-val="medium">🟡 Medium</button>
+      <button class="pill" data-val="low">🟢 Low</button>
+    </div>
+    <div class="pill-group" id="taskStatusFilter">
+      <button class="pill active" data-val="all">All</button>
+      <button class="pill" data-val="todo">Todo</button>
+      <button class="pill" data-val="inprogress">In Progress</button>
+      <button class="pill" data-val="done">Done</button>
+    </div>
+    <select class="select-input" id="taskSort" aria-label="Sort tasks">
+      <option value="dueDate">Due Date</option>
+      <option value="priority">Priority</option>
+      <option value="created">Created</option>
+      <option value="title">A-Z</option>
+    </select>
+    <div class="pill-group" id="taskViewToggle">
+      <button class="pill active" data-val="list" aria-label="List view">📋 List</button>
+      <button class="pill" data-val="kanban" aria-label="Kanban view">🗂️ Kanban</button>
+      <button class="pill" data-val="calendar" aria-label="Calendar view">📅 Calendar</button>
+    </div>
+    <button class="btn-primary" id="addTaskBtn">+ New Task</button>
+  </div>
+  <div id="taskListView" class="task-list-view">
+    <div class="task-list" id="taskList"></div>
+  </div>
+  <div id="taskKanbanView" class="kanban-view hidden">
+    <div class="kanban-col" data-status="backlog"><div class="kanban-header"><span>Backlog</span><span class="count-badge" id="kCount-backlog">0</span></div><div class="kanban-cards" id="kCards-backlog"></div><button class="kanban-add" data-status="backlog">+ Add</button></div>
+    <div class="kanban-col" data-status="todo"><div class="kanban-header"><span>Todo</span><span class="count-badge" id="kCount-todo">0</span></div><div class="kanban-cards" id="kCards-todo"></div><button class="kanban-add" data-status="todo">+ Add</button></div>
+    <div class="kanban-col" data-status="inprogress"><div class="kanban-header"><span>In Progress</span><span class="count-badge" id="kCount-inprogress">0</span></div><div class="kanban-cards" id="kCards-inprogress"></div><button class="kanban-add" data-status="inprogress">+ Add</button></div>
+    <div class="kanban-col" data-status="done"><div class="kanban-header"><span>Done</span><span class="count-badge" id="kCount-done">0</span></div><div class="kanban-cards" id="kCards-done"></div><button class="kanban-add" data-status="done">+ Add</button></div>
+  </div>
+  <div id="taskCalendarView" class="calendar-view hidden">
+    <div class="cal-nav"><button id="calPrev" aria-label="Previous month">←</button><span id="calMonthLabel"></span><button id="calToday">Today</button><button id="calNext" aria-label="Next month">→</button></div>
+    <div class="cal-grid" id="calGrid"></div>
+  </div>
+</section>
+
+<!-- ===== PLANNER ===== -->
+<section class="section" id="section-planner" data-section="planner">
+  <div class="planner-layout">
+    <div class="planner-sidebar">
+      <div class="mini-cal" id="miniCal">
+        <div class="mini-cal-nav"><button id="miniCalPrev" aria-label="Previous month">←</button><span id="miniCalLabel"></span><button id="miniCalNext" aria-label="Next month">→</button></div>
+        <div class="mini-cal-grid" id="miniCalGrid"></div>
+      </div>
+    </div>
+    <div class="planner-main">
+      <div class="planner-toolbar">
+        <button id="plannerPrev" aria-label="Previous day">← Yesterday</button>
+        <button id="plannerToday" class="btn-primary">Today</button>
+        <button id="plannerNext" aria-label="Next day">Tomorrow →</button>
+        <span id="plannerDateLabel" class="planner-date-label"></span>
+        <button class="btn-ghost" id="aiPlanDay">🤖 Plan My Day</button>
+        <button class="btn-primary" id="addEventBtn">+ Add Event</button>
+      </div>
+      <div class="time-grid-wrap">
+        <div class="time-grid" id="timeGrid"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== HABITS ===== -->
+<section class="section" id="section-habits" data-section="habits">
+  <div class="toolbar">
+    <div class="stats-bar" id="habitStatsBar"></div>
+    <div class="toolbar-right">
+      <button class="pill" id="habitHeatmapToggle">📊 Heatmap</button>
+      <button class="btn-primary" id="addHabitBtn">+ New Habit</button>
+    </div>
+  </div>
+  <div id="habitGridView">
+    <div class="habit-grid" id="habitGrid"></div>
+  </div>
+  <div id="habitHeatmapView" class="hidden">
+    <div class="heatmap-nav"><button id="heatmapPrev" aria-label="Previous year">←</button><span id="heatmapYear"></span><button id="heatmapNext" aria-label="Next year">→</button></div>
+    <div class="heatmap-container" id="heatmapContainer"></div>
+  </div>
+</section>
+
+<!-- ===== GOALS ===== -->
+<section class="section" id="section-goals" data-section="goals">
+  <div class="toolbar">
+    <div class="pill-group" id="goalCatFilter">
+      <button class="pill active" data-val="all">All</button>
+      <button class="pill" data-val="health">💚 Health</button>
+      <button class="pill" data-val="career">💼 Career</button>
+      <button class="pill" data-val="finance">💰 Finance</button>
+      <button class="pill" data-val="personal">👤 Personal</button>
+      <button class="pill" data-val="learning">📚 Learning</button>
+    </div>
+    <button class="btn-primary" id="addGoalBtn">+ New Goal</button>
+  </div>
+  <div class="goals-masonry" id="goalsGrid"></div>
+</section>
+
+<!-- ===== HEALTH ===== -->
+<section class="section" id="section-health" data-section="health">
+  <div class="health-date-nav">
+    <button id="healthPrev" aria-label="Previous day">←</button>
+    <span id="healthDateLabel"></span>
+    <button id="healthToday" class="btn-primary">Today</button>
+    <button id="healthNext" aria-label="Next day">→</button>
+  </div>
+  <div class="health-grid" id="healthGrid"></div>
+  <div class="health-charts">
+    <div class="card"><h3>Water (7 days)</h3><canvas id="waterChart" width="300" height="120"></canvas></div>
+    <div class="card"><h3>Sleep (7 days)</h3><canvas id="sleepChart" width="300" height="120"></canvas></div>
+    <div class="card"><h3>Mood Trend</h3><canvas id="moodChart" width="300" height="120"></canvas></div>
+    <div class="card"><h3>Weight (30 days)</h3><canvas id="weightChart" width="300" height="120"></canvas></div>
+  </div>
+  <div class="card health-insights">
+    <button class="btn-primary" id="analyzeHealthBtn">🤖 Analyze My Health</button>
+    <div id="healthInsightsText"></div>
+  </div>
+</section>
+
+<!-- ===== FOCUS ===== -->
+<section class="section" id="section-focus" data-section="focus">
+  <div class="focus-layout">
+    <div class="focus-queue card">
+      <div class="card-header"><h3>Focus Queue</h3><span id="focusSessionCounter">Session 1 of 4</span></div>
+      <div class="focus-task-list" id="focusTaskList"></div>
+      <button class="btn-ghost" id="addToQueueBtn">+ Add to queue</button>
+      <button class="btn-ghost" id="aiSortQueueBtn">🤖 AI Sort</button>
+    </div>
+    <div class="focus-center">
+      <div class="mode-tabs" id="focusModeTabs">
+        <button class="mode-tab active" data-mode="focus" data-duration="25">Focus <span class="mode-time" id="focusModeTime">25m</span></button>
+        <button class="mode-tab" data-mode="short" data-duration="5">Short Break <span class="mode-time">5m</span></button>
+        <button class="mode-tab" data-mode="long" data-duration="15">Long Break <span class="mode-time">15m</span></button>
+      </div>
+      <div class="timer-ring-wrap">
+        <svg class="timer-svg" viewBox="0 0 280 280" width="280" height="280">
+          <circle cx="140" cy="140" r="120" fill="none" stroke="rgba(255,255,255,0.07)" stroke-width="10"/>
+          <circle cx="140" cy="140" r="120" fill="none" stroke="url(#timerGrad)" stroke-width="10"
+            stroke-linecap="round" stroke-dasharray="753" stroke-dashoffset="0"
+            id="timerRing" transform="rotate(-90 140 140)"/>
+          <defs><linearGradient id="timerGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#00F5FF"/><stop offset="100%" stop-color="#7B2FFF"/>
+          </linearGradient></defs>
+        </svg>
+        <div class="timer-display">
+          <div class="timer-digits" id="timerDigits">25:00</div>
+          <div class="timer-mode-label" id="timerModeLabel">FOCUS</div>
+        </div>
+      </div>
+      <div class="pomodoro-dots" id="pomodoroDots">
+        <span class="pom-dot"></span><span class="pom-dot"></span><span class="pom-dot"></span><span class="pom-dot"></span>
+      </div>
+      <div class="timer-controls">
+        <button class="btn-ghost" id="timerReset" aria-label="Reset timer">↺ Reset</button>
+        <button class="btn-timer" id="timerStartPause" aria-label="Start or pause timer">▶ Start</button>
+        <button class="btn-ghost" id="timerSkip" aria-label="Skip timer">⏭ Skip</button>
+      </div>
+      <div class="ambient-sounds">
+        <div class="ambient-btns">
+          <button class="ambient-btn" data-sound="forest" aria-label="Forest sounds">🌲 Forest</button>
+          <button class="ambient-btn" data-sound="rain" aria-label="Rain sounds">🌧️ Rain</button>
+          <button class="ambient-btn" data-sound="cafe" aria-label="Cafe sounds">☕ Cafe</button>
+          <button class="ambient-btn" data-sound="ocean" aria-label="Ocean sounds">🌊 Ocean</button>
+          <button class="ambient-btn" data-sound="white" aria-label="White noise">📻 White</button>
+        </div>
+        <input type="range" class="volume-slider hidden" id="volumeSlider" min="0" max="100" value="50" aria-label="Volume" />
+      </div>
+    </div>
+    <div class="focus-stats card">
+      <div class="card-header"><h3>Session Stats</h3></div>
+      <div class="focus-stat-row"><span>Today</span><strong id="focusTodaySessions">0 sessions</strong></div>
+      <div class="focus-stat-row"><span>Total time</span><strong id="focusTodayTime">0h 0m</strong></div>
+      <div class="focus-stat-row"><span>Streak</span><strong id="focusStreak">🔥 0 days</strong></div>
+      <canvas id="focusChart" width="200" height="100"></canvas>
+      <div class="focus-stat-row"><span>All-time</span><strong id="focusAllTime">0 hours</strong></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== ROUTINE ===== -->
+<section class="section" id="section-routine" data-section="routine">
+  <div class="routine-setup card">
+    <div class="routine-setup-row">
+      <label>Wake-up time <input type="time" id="wakeTimeInput" class="time-input-lg" value="06:30" aria-label="Wake up time" /></label>
+      <div class="mood-selector">
+        <span>Mood:</span>
+        <button class="mood-btn" data-mood="1" aria-label="Tired">😴</button>
+        <button class="mood-btn" data-mood="2" aria-label="Neutral">😐</button>
+        <button class="mood-btn" data-mood="3" aria-label="Good">🙂</button>
+        <button class="mood-btn" data-mood="4" aria-label="Happy">😊</button>
+        <button class="mood-btn" data-mood="5" aria-label="Energized">🤩</button>
+      </div>
+      <div class="energy-row">
+        <span>Energy:</span>
+        <input type="range" id="energySlider" min="1" max="10" value="7" aria-label="Energy level" />
+        <span id="energyVal">7</span>
+      </div>
+    </div>
+    <div class="goals-today">
+      <span>Top 3 goals:</span>
+      <input class="input" placeholder="Goal 1" id="goal1" aria-label="Goal 1" />
+      <input class="input" placeholder="Goal 2" id="goal2" aria-label="Goal 2" />
+      <input class="input" placeholder="Goal 3" id="goal3" aria-label="Goal 3" />
+    </div>
+    <div class="routine-actions">
+      <button class="btn-primary" id="startRoutineBtn">▶ Start Routine</button>
+      <button class="btn-ghost" id="aiRoutineBtn">🤖 AI Build My Routine</button>
+      <button class="btn-ghost" id="addRoutineItemBtn">+ Add Item</button>
+    </div>
+  </div>
+  <div class="routine-progress-bar hidden" id="routineProgressBar">
+    <div class="routine-progress-fill" id="routineProgressFill"></div>
+    <span id="routineProgressLabel">0 of 0 complete</span>
+  </div>
+  <div class="routine-timeline" id="routineTimeline"></div>
+  <div class="routine-stats card">
+    <span>🔥 <strong id="routineStreak">0</strong> day streak</span>
+    <span>✅ Avg: <strong id="routineAvg">0%</strong></span>
+    <span>⏰ Earliest: <strong id="routineEarliest">—</strong></span>
+  </div>
+</section>
+
+<!-- ===== JOURNAL ===== -->
+<section class="section" id="section-journal" data-section="journal">
+  <div class="journal-layout">
+    <div class="journal-sidebar card">
+      <input class="search-input" id="journalSearch" placeholder="Search entries..." aria-label="Search journal" />
+      <div class="journal-meta"><span>📝 <strong id="journalStreak">0</strong> day streak</span><span><strong id="journalMonthCount">0</strong> this month</span></div>
+      <button class="btn-primary" id="newJournalBtn">+ New Entry</button>
+      <div class="journal-list" id="journalList"></div>
+    </div>
+    <div class="journal-editor card">
+      <div class="journal-date-header" id="journalDateHeader"></div>
+      <div class="journal-mood-row">
+        <span>Mood:</span>
+        <button class="mood-btn" data-mood="1" aria-label="Sad">😢</button>
+        <button class="mood-btn" data-mood="2" aria-label="Neutral">😐</button>
+        <button class="mood-btn" data-mood="3" aria-label="Good">🙂</button>
+        <button class="mood-btn" data-mood="4" aria-label="Happy">😊</button>
+        <button class="mood-btn" data-mood="5" aria-label="Great">🤩</button>
+        <span>Energy:</span>
+        <div class="energy-stars" id="journalEnergy">
+          <span class="energy-star" data-e="1">⚡</span><span class="energy-star" data-e="2">⚡</span>
+          <span class="energy-star" data-e="3">⚡</span><span class="energy-star" data-e="4">⚡</span>
+          <span class="energy-star" data-e="5">⚡</span>
+        </div>
+      </div>
+      <input class="journal-title-input" id="journalTitle" placeholder="What's on your mind?" aria-label="Journal title" />
+      <textarea class="journal-body" id="journalBody" placeholder="Write your thoughts..." aria-label="Journal body"></textarea>
+      <div class="journal-footer">
+        <span class="journal-wordcount" id="journalWordCount">0 words</span>
+        <span class="journal-save-status" id="journalSaveStatus">✓ Saved</span>
+        <button class="btn-ghost btn-sm" id="weeklyReviewBtn">📊 Weekly Review</button>
+      </div>
+    </div>
+    <div class="journal-prompts card">
+      <h3>Today's Prompts</h3>
+      <div id="journalPrompts"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== FINANCE ===== -->
+<section class="section" id="section-finance" data-section="finance">
+  <div class="stat-cards" id="financeStatCards">
+    <div class="stat-card"><div class="stat-icon" style="background:var(--gradient-primary)">💳</div><div class="stat-value" id="finBudget">$0</div><div class="stat-label">Monthly Budget</div><div class="mini-progress"><div class="mini-progress-fill" id="finBudgetBar"></div></div></div>
+    <div class="stat-card"><div class="stat-icon" style="background:var(--gradient-nature)">💵</div><div class="stat-value green-text" id="finIncome">$0</div><div class="stat-label">Total Income</div></div>
+    <div class="stat-card"><div class="stat-icon" style="background:var(--gradient-warm)">💸</div><div class="stat-value red-text" id="finExpenses">$0</div><div class="stat-label">Total Expenses</div></div>
+    <div class="stat-card"><div class="stat-icon" style="background:linear-gradient(135deg,#FFD93D,#6BCB77)">📈</div><div class="stat-value" id="finSavings">0%</div><div class="stat-label">Savings Rate</div></div>
+  </div>
+  <div class="finance-charts">
+    <div class="card"><h3>Spending by Category</h3><canvas id="finDonut" width="300" height="250"></canvas></div>
+    <div class="card"><h3>Income vs Expenses (6 months)</h3><canvas id="finBar" width="400" height="250"></canvas></div>
+  </div>
+  <div class="card">
+    <div class="toolbar">
+      <input class="search-input" id="txSearch" placeholder="Search transactions..." aria-label="Search transactions" />
+      <select class="select-input" id="txCatFilter" aria-label="Filter by category"><option value="all">All Categories</option></select>
+      <div class="pill-group" id="txTypeFilter">
+        <button class="pill active" data-val="all">All</button>
+        <button class="pill" data-val="income">Income</button>
+        <button class="pill" data-val="expense">Expense</button>
+      </div>
+      <button class="btn-primary" id="addTxBtn">+ Add Transaction</button>
+      <button class="btn-ghost" id="exportCsvBtn">📥 Export CSV</button>
+    </div>
+    <div class="tx-list" id="txList"></div>
+    <button class="btn-ghost" id="loadMoreTx">Load more</button>
+  </div>
+</section>
+
+<!-- ===== BALANCE ===== -->
+<section class="section" id="section-balance" data-section="balance">
+  <div class="balance-layout">
+    <div class="card balance-wheel-card">
+      <h3>Life Balance Wheel</h3>
+      <canvas id="balanceWheel" width="400" height="400"></canvas>
+    </div>
+    <div class="card balance-controls">
+      <h3>Adjust Scores</h3>
+      <div id="balanceSliders"></div>
+      <div class="balance-summary" id="balanceSummary"></div>
+      <button class="btn-primary" id="saveBalanceBtn">💾 Save This Week</button>
+      <button class="btn-ghost" id="analyzeBalanceBtn">🤖 Analyze My Balance</button>
+      <div class="balance-analysis" id="balanceAnalysis"></div>
+    </div>
+  </div>
+  <div class="card">
+    <h3>Weekly History</h3>
+    <div class="balance-history" id="balanceHistory"></div>
+  </div>
+</section>
+
+<!-- ===== ANALYTICS ===== -->
+<section class="section" id="section-analytics" data-section="analytics">
+  <div class="toolbar">
+    <div class="pill-group" id="analyticsRange">
+      <button class="pill active" data-val="week">This Week</button>
+      <button class="pill" data-val="month">This Month</button>
+      <button class="pill" data-val="3months">Last 3 Months</button>
+    </div>
+    <button class="btn-ghost" id="exportReportBtn">📄 Download Report</button>
+  </div>
+  <div class="kpi-grid" id="kpiGrid"></div>
+  <div class="analytics-charts">
+    <div class="card"><h3>Productivity Score Trend</h3><canvas id="analyticsProductivity" width="400" height="180"></canvas></div>
+    <div class="card"><h3>Focus Time</h3><canvas id="analyticsFocus" width="400" height="180"></canvas></div>
+    <div class="card"><h3>Habit Performance</h3><canvas id="analyticsHabits" width="400" height="180"></canvas></div>
+    <div class="card"><h3>Mood Trend</h3><canvas id="analyticsMood" width="400" height="180"></canvas></div>
+    <div class="card"><h3>Spending by Category</h3><canvas id="analyticsSpending" width="400" height="180"></canvas></div>
+    <div class="card"><h3>Sleep Pattern</h3><canvas id="analyticsSleep" width="400" height="180"></canvas></div>
+  </div>
+</section>
+
+<!-- ===== AI ASSISTANT ===== -->
+<section class="section" id="section-ai" data-section="ai">
+  <div class="ai-layout">
+    <div class="ai-chat-area">
+      <div class="ai-chat-header">
+        <div class="ai-avatar-lg pulse-ring">🤖</div>
+        <div><div class="ai-name">ARIA</div><div class="ai-subtitle">Your Productivity AI</div></div>
+        <div class="ai-status"><span class="status-dot"></span> Online</div>
+        <button class="btn-ghost" id="newChatBtn">🗑 New Chat</button>
+        <button class="btn-ghost" id="chatHistoryBtn">📚 History</button>
+      </div>
+      <div class="chat-messages" id="chatMessages">
+        <div class="chat-suggestions" id="chatSuggestions">
+          <p>How can I help you today?</p>
+          <div class="suggestion-grid">
+            <button class="suggestion-chip" data-msg="📅 Plan my week">📅 Plan my week</button>
+            <button class="suggestion-chip" data-msg="💪 Suggest habits for me">💪 Suggest habits</button>
+            <button class="suggestion-chip" data-msg="🎯 Review my goals">🎯 Review my goals</button>
+            <button class="suggestion-chip" data-msg="⏱️ Help me focus better">⏱️ Help me focus</button>
+            <button class="suggestion-chip" data-msg="📊 Analyze my productivity data">📊 Analyze my data</button>
+            <button class="suggestion-chip" data-msg="✅ Help me prioritize my tasks">✅ Prioritize tasks</button>
+          </div>
+        </div>
+      </div>
+      <div class="chat-input-area">
+        <textarea class="chat-input" id="chatInput" placeholder="Message ARIA... (Enter to send, Shift+Enter for new line)" rows="1" aria-label="Chat message"></textarea>
+        <button class="btn-primary" id="chatSendBtn" aria-label="Send message">➤</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== NOTIFICATIONS ===== -->
+<section class="section" id="section-notifications" data-section="notifications">
+  <div class="toolbar">
+    <div class="pill-group" id="notifTabFilter">
+      <button class="pill active" data-val="all">All</button>
+      <button class="pill" data-val="tasks">✅ Tasks</button>
+      <button class="pill" data-val="habits">💪 Habits</button>
+      <button class="pill" data-val="goals">🎯 Goals</button>
+      <button class="pill" data-val="system">⚙️ System</button>
+    </div>
+    <button class="btn-ghost" id="markAllReadBtn">✓ Mark all read</button>
+    <button class="btn-ghost" id="clearAllNotifBtn">🗑 Clear all</button>
+  </div>
+  <div class="notif-list" id="notifList"></div>
+</section>
+
+<!-- ===== SETTINGS ===== -->
+<section class="section" id="section-settings" data-section="settings">
+  <div class="settings-layout">
+    <nav class="settings-nav" aria-label="Settings navigation">
+      <button class="settings-nav-item active" data-tab="profile">👤 Profile</button>
+      <button class="settings-nav-item" data-tab="appearance">🎨 Appearance</button>
+      <button class="settings-nav-item" data-tab="productivity">⚡ Productivity</button>
+      <button class="settings-nav-item" data-tab="ai">🤖 AI Settings</button>
+      <button class="settings-nav-item" data-tab="data">💾 Data</button>
+      <button class="settings-nav-item" data-tab="shortcuts">⌨️ Shortcuts</button>
+    </nav>
+    <div class="settings-content">
+      <div class="settings-tab active" id="stab-profile">
+        <h3>Profile</h3>
+        <div class="form-group"><label>Display Name<input class="input" id="settingName" placeholder="Your name" /></label></div>
+        <div class="form-group"><label>Username<input class="input" id="settingUsername" placeholder="@username" /></label></div>
+        <div class="form-group"><label>Avatar Color<input type="color" id="settingAvatarColor" value="#7B2FFF" /></label></div>
+        <div class="form-group"><label>Timezone<select class="select-input" id="settingTimezone"><option>UTC</option><option>America/New_York</option><option>America/Los_Angeles</option><option>Europe/London</option><option>Asia/Kolkata</option><option>Asia/Tokyo</option></select></label></div>
+        <button class="btn-primary" id="saveProfileBtn">💾 Save Profile</button>
+      </div>
+      <div class="settings-tab" id="stab-appearance">
+        <h3>Appearance</h3>
+        <div class="form-group"><label>Theme</label><div class="pill-group" id="themeSelector"><button class="pill active" data-val="dark">Dark</button><button class="pill" data-val="light">Light</button></div></div>
+        <div class="form-group"><label>Font Size</label><div class="pill-group" id="fontSizeSelector"><button class="pill active" data-val="15px">Normal</button><button class="pill" data-val="17px">Large</button><button class="pill" data-val="19px">Extra Large</button></div></div>
+        <div class="form-group"><label>Reduce Motion<input type="checkbox" id="reduceMotion" /></label></div>
+      </div>
+      <div class="settings-tab" id="stab-productivity">
+        <h3>Productivity</h3>
+        <div class="form-group"><label>Focus Duration (min)<input type="number" class="input" id="settingFocus" value="25" min="1" max="120" /></label></div>
+        <div class="form-group"><label>Short Break (min)<input type="number" class="input" id="settingShort" value="5" min="1" max="30" /></label></div>
+        <div class="form-group"><label>Long Break (min)<input type="number" class="input" id="settingLong" value="15" min="1" max="60" /></label></div>
+        <div class="form-group"><label>Auto-start breaks<input type="checkbox" id="settingAutoBreak" /></label></div>
+        <div class="form-group"><label>Daily Task Goal<input type="number" class="input" id="settingTaskGoal" value="5" min="1" /></label></div>
+        <button class="btn-primary" id="saveProductivityBtn">💾 Save</button>
+      </div>
+      <div class="settings-tab" id="stab-ai">
+        <h3>AI Settings</h3>
+        <div class="form-group"><label>API Key<div class="input-with-icon"><input type="password" class="input" id="settingApiKey" placeholder="sk-..." /><button class="icon-btn" id="toggleApiKey" aria-label="Show/hide API key">👁</button></div></label></div>
+        <div class="form-group"><label>Provider</label><div class="pill-group" id="aiProviderSelector"><button class="pill active" data-val="claude">Claude</button><button class="pill" data-val="openai">OpenAI</button></div></div>
+        <div class="form-group"><label>AI Personality</label><div class="pill-group" id="aiPersonalitySelector"><button class="pill active" data-val="friendly">Friendly</button><button class="pill" data-val="professional">Professional</button><button class="pill" data-val="motivational">Motivational</button></div></div>
+        <button class="btn-primary" id="saveAiBtn">💾 Save</button>
+        <button class="btn-ghost" id="testAiBtn">🧪 Test Connection</button>
+      </div>
+      <div class="settings-tab" id="stab-data">
+        <h3>Data Management</h3>
+        <div class="storage-meter"><div class="storage-fill" id="storageFill"></div></div>
+        <p id="storageLabel">Calculating...</p>
+        <button class="btn-primary" id="exportDataBtn">📤 Export All Data</button>
+        <label class="btn-ghost" style="cursor:pointer">📥 Import Data<input type="file" id="importDataInput" accept=".json" class="hidden" /></label>
+        <hr class="divider" />
+        <button class="btn-danger" id="clearAllDataBtn">⚠️ Clear All Data</button>
+      </div>
+      <div class="settings-tab" id="stab-shortcuts">
+        <h3>Keyboard Shortcuts</h3>
+        <table class="shortcuts-table">
+          <tr><td><kbd>⌘/Ctrl + K</kbd></td><td>Command Palette</td></tr>
+          <tr><td><kbd>⌘/Ctrl + N</kbd></td><td>New Task</td></tr>
+          <tr><td><kbd>⌘/Ctrl + J</kbd></td><td>New Journal Entry</td></tr>
+          <tr><td><kbd>Space</kbd></td><td>Start/Pause Focus Timer</td></tr>
+          <tr><td><kbd>Escape</kbd></td><td>Close Modal</td></tr>
+          <tr><td><kbd>1-9</kbd></td><td>Navigate to Module</td></tr>
+          <tr><td><kbd>T</kbd></td><td>Toggle Theme</td></tr>
+          <tr><td><kbd>S</kbd></td><td>Open Settings</td></tr>
+          <tr><td><kbd>?</kbd></td><td>Show Shortcuts</td></tr>
+        </table>
+      </div>
+    </div>
+  </div>
+</section>
+
+</main><!-- end main-content -->
+
+<!-- ===== MODALS ===== -->
+
+<!-- Add/Edit Task Modal -->
+<div class="modal-overlay hidden" id="modal-task" role="dialog" aria-modal="true" aria-label="Task editor">
+  <div class="modal modal-md">
+    <div class="modal-header"><h2 id="taskModalTitle">New Task</h2><button class="modal-close" data-modal="task" aria-label="Close">✕</button></div>
+    <div class="modal-body">
+      <div class="form-group"><label>Title *<input class="input" id="taskTitleInput" placeholder="Task title..." maxlength="100" /><span class="char-count" id="taskTitleCount">0/100</span></label></div>
+      <div class="form-group"><label>Description<textarea class="input textarea-auto" id="taskDescInput" placeholder="Details..."></textarea></label></div>
+      <div class="form-group"><label>Priority</label>
+        <div class="pill-group" id="taskPriorityInput">
+          <button class="pill" data-val="high">🔴 High</button>
+          <button class="pill active" data-val="medium">🟡 Medium</button>
+          <button class="pill" data-val="low">🟢 Low</button>
+        </div>
+      </div>
+      <div class="form-group"><label>Tags<div class="tag-input-wrap"><input class="input" id="taskTagInput" placeholder="Add tag + Enter" /><div class="tag-chips" id="taskTagChips"></div></div></label></div>
+      <div class="form-group"><label>Due Date<input type="datetime-local" class="input" id="taskDueInput" /></label></div>
+      <div class="form-group"><label>Recurring</label>
+        <div class="pill-group" id="taskRecurringInput">
+          <button class="pill active" data-val="none">None</button>
+          <button class="pill" data-val="daily">Daily</button>
+          <button class="pill" data-val="weekly">Weekly</button>
+          <button class="pill" data-val="monthly">Monthly</button>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-ghost" id="aiSuggestTaskBtn">🤖 AI Suggest</button>
+      <button class="btn-ghost" data-modal="task">Cancel</button>
+      <button class="btn-primary" id="saveTaskBtn">Save Task</button>
+    </div>
+  </div>
+</div>
+
+<!-- Add Event Modal -->
+<div class="modal-overlay hidden" id="modal-event" role="dialog" aria-modal="true" aria-label="Event editor">
+  <div class="modal modal-md">
+    <div class="modal-header"><h2 id="eventModalTitle">New Event</h2><button class="modal-close" data-modal="event" aria-label="Close">✕</button></div>
+    <div class="modal-body">
+      <div class="form-group"><label>Title *<input class="input" id="eventTitleInput" placeholder="Event title..." /></label></div>
+      <div class="form-group"><label>Start Time<input type="time" class="input" id="eventStartInput" value="09:00" /></label></div>
+      <div class="form-group"><label>End Time<input type="time" class="input" id="eventEndInput" value="10:00" /></label></div>
+      <div class="form-group"><label>Category</label>
+        <div class="pill-group" id="eventCategoryInput">
+          <button class="pill active" data-val="work" style="--cat-color:#00F5FF">💼 Work</button>
+          <button class="pill" data-val="health" style="--cat-color:#6BCB77">💪 Health</button>
+          <button class="pill" data-val="personal" style="--cat-color:#7B2FFF">👤 Personal</button>
+          <button class="pill" data-val="break" style="--cat-color:#FFD93D">☕ Break</button>
+        </div>
+      </div>
+      <div class="form-group"><label>Notes<textarea class="input textarea-auto" id="eventNotesInput" placeholder="Optional notes..."></textarea></label></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-ghost" data-modal="event">Cancel</button>
+      <button class="btn-primary" id="saveEventBtn">Save Event</button>
+    </div>
+  </div>
+</div>
+
+<!-- Add Habit Modal -->
+<div class="modal-overlay hidden" id="modal-habit" role="dialog" aria-modal="true" aria-label="Habit editor">
+  <div class="modal modal-md">
+    <div class="modal-header"><h2>New Habit</h2><button class="modal-close" data-modal="habit" aria-label="Close">✕</button></div>
+    <div class="modal-body">
+      <div class="form-group"><label>Name *<input class="input" id="habitNameInput" placeholder="Habit name..." /></label></div>
+      <div class="form-group"><label>Icon</label>
+        <div class="emoji-picker" id="habitEmojiPicker"></div>
+        <span id="habitSelectedEmoji" class="selected-emoji">💪</span>
+      </div>
+      <div class="form-group"><label>Color</label>
+        <div class="color-swatches" id="habitColorSwatches">
+          <button class="color-swatch active" data-color="#00F5FF" style="background:#00F5FF" aria-label="Cyan"></button>
+          <button class="color-swatch" data-color="#7B2FFF" style="background:#7B2FFF" aria-label="Violet"></button>
+          <button class="color-swatch" data-color="#FF6B6B" style="background:#FF6B6B" aria-label="Coral"></button>
+          <button class="color-swatch" data-color="#FFD93D" style="background:#FFD93D" aria-label="Gold"></button>
+          <button class="color-swatch" data-color="#6BCB77" style="background:#6BCB77" aria-label="Green"></button>
+          <button class="color-swatch" data-color="#F0F4FF" style="background:#F0F4FF" aria-label="White"></button>
+        </div>
+      </div>
+      <div class="form-group"><label>Frequency</label>
+        <div class="pill-group" id="habitFreqInput">
+          <button class="pill active" data-val="daily">Daily</button>
+          <button class="pill" data-val="weekdays">Weekdays</button>
+          <button class="pill" data-val="weekends">Weekends</button>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-ghost" id="aiSuggestHabitsBtn">🤖 AI Suggest</button>
+      <button class="btn-ghost" data-modal="habit">Cancel</button>
+      <button class="btn-primary" id="saveHabitBtn">Save Habit</button>
+    </div>
+  </div>
+</div>
+
+<!-- Add Goal Modal -->
+<div class="modal-overlay hidden" id="modal-goal" role="dialog" aria-modal="true" aria-label="Goal editor">
+  <div class="modal modal-lg">
+    <div class="modal-header"><h2>New Goal</h2><button class="modal-close" data-modal="goal" aria-label="Close">✕</button></div>
+    <div class="modal-body">
+      <div class="step-indicator" id="goalStepIndicator"><span class="step-dot active"></span><span class="step-dot"></span><span class="step-dot"></span></div>
+      <div class="goal-step" id="goalStep1">
+        <div class="form-group"><label>Title *<input class="input" id="goalTitleInput" placeholder="Goal title..." /></label></div>
+        <div class="form-group"><label>Description<textarea class="input textarea-auto" id="goalDescInput" placeholder="Describe your goal..."></textarea></label></div>
+        <div class="form-group"><label>Category</label>
+          <div class="pill-group" id="goalCatInput">
+            <button class="pill" data-val="health">💚 Health</button>
+            <button class="pill active" data-val="career">💼 Career</button>
+            <button class="pill" data-val="finance">💰 Finance</button>
+            <button class="pill" data-val="personal">👤 Personal</button>
+            <button class="pill" data-val="learning">📚 Learning</button>
+          </div>
+        </div>
+        <div class="form-group"><label>Target Date<input type="date" class="input" id="goalDateInput" /></label></div>
+      </div>
+      <div class="goal-step hidden" id="goalStep2">
+        <div class="form-group"><label>Milestones</label>
+          <div id="goalMilestones"></div>
+          <button class="btn-ghost btn-sm" id="addMilestoneBtn">+ Add Milestone</button>
+          <button class="btn-ghost btn-sm" id="aiMilestonesBtn">🤖 AI Generate</button>
+        </div>
+      </div>
+      <div class="goal-step hidden" id="goalStep3">
+        <div class="form-group"><label>Why does this matter?<textarea class="input textarea-auto" id="goalWhyInput" placeholder="Your motivation..."></textarea></label></div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-ghost hidden" id="goalBackBtn">← Back</button>
+      <button class="btn-ghost" data-modal="goal">Cancel</button>
+      <button class="btn-primary" id="goalNextBtn">Next →</button>
+    </div>
+  </div>
+</div>
+
+<!-- Add Transaction Modal -->
+<div class="modal-overlay hidden" id="modal-transaction" role="dialog" aria-modal="true" aria-label="Transaction editor">
+  <div class="modal modal-md">
+    <div class="modal-header"><h2>Add Transaction</h2><button class="modal-close" data-modal="transaction" aria-label="Close">✕</button></div>
+    <div class="modal-body">
+      <div class="form-group"><label>Type</label>
+        <div class="pill-group" id="txTypeInput">
+          <button class="pill" data-val="income">💵 Income</button>
+          <button class="pill active" data-val="expense">💸 Expense</button>
+        </div>
+      </div>
+      <div class="form-group"><label>Amount<div class="input-with-icon"><span class="currency-prefix" id="currencyPrefix">$</span><input type="number" class="input" id="txAmountInput" placeholder="0.00" min="0" step="0.01" /></div></label></div>
+      <div class="form-group"><label>Category</label>
+        <div class="cat-icon-grid" id="txCatGrid">
+          <button class="cat-icon-btn active" data-cat="Food">🍔 Food</button>
+          <button class="cat-icon-btn" data-cat="Transport">🚗 Transport</button>
+          <button class="cat-icon-btn" data-cat="Health">❤️ Health</button>
+          <button class="cat-icon-btn" data-cat="Shopping">🛍️ Shopping</button>
+          <button class="cat-icon-btn" data-cat="Bills">📄 Bills</button>
+          <button class="cat-icon-btn" data-cat="Fun">🎉 Fun</button>
+          <button class="cat-icon-btn" data-cat="Salary">💼 Salary</button>
+          <button class="cat-icon-btn" data-cat="Other">📦 Other</button>
+        </div>
+      </div>
+      <div class="form-group"><label>Description<input class="input" id="txDescInput" placeholder="What was this for?" /></label></div>
+      <div class="form-group"><label>Date<input type="date" class="input" id="txDateInput" /></label></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-ghost" id="aiCategorizeTxBtn">🤖 AI Categorize</button>
+      <button class="btn-ghost" data-modal="transaction">Cancel</button>
+      <button class="btn-primary" id="saveTxBtn">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- Command Palette -->
+<div class="modal-overlay hidden" id="modal-command" role="dialog" aria-modal="true" aria-label="Command palette">
+  <div class="command-palette">
+    <input class="command-input" id="commandInput" placeholder="Search modules, actions..." aria-label="Command search" />
+    <div class="command-results" id="commandResults"></div>
+  </div>
+</div>
+
+<!-- Toast Container -->
+<div class="toast-container" id="toastContainer" aria-live="polite"></div>
+
+<!-- Floating Action Button -->
+<div class="fab-container" id="fabContainer">
+  <div class="fab-actions hidden" id="fabActions">
+    <button class="fab-action" id="fabTask" aria-label="New Task"><span>✅</span><span class="fab-label">New Task</span></button>
+    <button class="fab-action" id="fabFocus" aria-label="Start Focus"><span>⏱️</span><span class="fab-label">Start Focus</span></button>
+    <button class="fab-action" id="fabHabit" aria-label="Log Habit"><span>💪</span><span class="fab-label">Log Habit</span></button>
+    <button class="fab-action" id="fabNote" aria-label="New Note"><span>📔</span><span class="fab-label">New Note</span></button>
+  </div>
+  <button class="fab-main" id="fabMain" aria-label="Quick actions">+</button>
+</div>
+
+<!-- Timer End Overlay -->
+<div class="timer-end-overlay hidden" id="timerEndOverlay">
+  <div class="timer-end-card">
+    <div class="confetti-container" id="confettiContainer"></div>
+    <div class="timer-end-emoji">🎉</div>
+    <h2>Session Complete!</h2>
+    <p id="timerEndMsg">Great work! Take a well-deserved break.</p>
+    <div class="timer-end-actions">
+      <button class="btn-primary" id="takeBreakBtn">Take Break Now</button>
+      <button class="btn-ghost" id="skipBreakBtn">Skip Break</button>
+    </div>
+  </div>
+</div>
+
+<!-- Mobile Bottom Tab Bar -->
+<nav class="mobile-tabbar" role="navigation" aria-label="Mobile navigation">
+  <button class="tab-btn active" data-section="dashboard" aria-label="Dashboard">🏠</button>
+  <button class="tab-btn" data-section="tasks" aria-label="Tasks">✅</button>
+  <button class="tab-btn" data-section="focus" aria-label="Focus">⏱️</button>
+  <button class="tab-btn" data-section="habits" aria-label="Habits">💪</button>
+  <button class="tab-btn" data-section="ai" aria-label="AI">🤖</button>
+</nav>
+
+<script src="app.js"></script>
+</body>
+</html>
